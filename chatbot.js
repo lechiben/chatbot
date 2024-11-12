@@ -54,6 +54,11 @@ const generateBotResponse = async (incomingMessageDiv) => {
         const response = await fetch(API_URL, requestOptions);
         const data = await response.json();
         if(!response.ok) throw new Error(data.error.message);
+
+        // Check if response has expected structure before accessing it
+        if (!response.ok || !data.candidates || !data.candidates[0]?.content?.parts) {
+            throw new Error("Unexpected response structure from the API. Please try asking again.");
+        }
         
         // Extract and display bot's response text
         const apiResponseText = data.candidates[0].content.parts[0].text.replace(/\*\*(.*?)\*\*/g, "$1").trim();
